@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breakout — BBCC Arcade | BBCC ICT Fest 2026</title>
+  <meta name="description" content="Play Breakout for free — smash every brick with the bouncing ball on the BBCC Arcade.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0A0908">
+  <link rel="canonical" href="https://bbccictfest.pro.bd/games/breakout.html">
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0A0908; --bg-2: #100E0D; --card: #16130F; --card-2: #1D1915;
+      --line: rgba(255, 255, 255, 0.07); --line-2: rgba(255, 255, 255, 0.14);
+      --ember: #FF7A1A; --ember-2: #FF9D45; --ember-soft: rgba(255, 122, 26, 0.10);
+      --ember-line: rgba(255, 122, 26, 0.28); --flame: #E2260E; --gold: #FFC24B;
+      --text: #F5F1EA; --text-2: #A8A097; --text-3: #6B655C;
+      --grad: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    ::selection { background: rgba(255, 122, 26, 0.35); color: #fff; }
+    :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 768px) { .container { padding: 0 20px; } }
+
+    .arcade-nav { position: sticky; top: 0; z-index: 100; background: rgba(10, 9, 8, 0.85); backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); border-bottom: 1px solid var(--line); }
+    .arcade-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+    .arcade-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: var(--font-display); font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+    .arcade-logo img { height: 32px; width: auto; }
+    .arcade-links { display: flex; gap: 8px; }
+    .arcade-links a { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); border-radius: 100px; transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease; }
+    .arcade-links a:hover { color: var(--ember); border-color: var(--ember-line); background: var(--ember-soft); }
+    .arcade-links svg { width: 14px; height: 14px; }
+    @media (max-width: 640px) { .arcade-links a { font-size: 0; padding: 9px 12px; } .arcade-links svg { width: 16px; height: 16px; } }
+
+    .game-bar { border-bottom: 1px solid var(--line); background: var(--bg-2); overflow-x: auto; }
+    .game-bar-inner { display: flex; gap: 8px; padding: 12px 0; width: max-content; }
+    .game-bar a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 7px 14px; border-radius: 100px; border: 1px solid transparent; white-space: nowrap; transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease; }
+    .game-bar a:hover { color: var(--ember); background: var(--ember-soft); }
+    .game-bar a.on { color: #1A0D02; background: var(--grad); font-weight: 700; }
+
+    .game-wrap { padding: clamp(32px, 5vw, 56px) 0 clamp(48px, 6vw, 80px); }
+    .game-head { text-align: center; margin-bottom: 28px; }
+    .game-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 100px; background: var(--ember-soft); border: 1px solid var(--ember-line); color: var(--ember); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+    .game-head h1 { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .game-head p { font-size: 14.5px; color: var(--text-2); max-width: 520px; margin: 0 auto; }
+
+    .game-arena { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .game-stats { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 22px; text-align: center; min-width: 110px; }
+    .stat b { font-family: var(--font-display); font-size: 24px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; display: block; line-height: 1.2; }
+    .stat span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+
+    .board-wrap { position: relative; }
+    canvas { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7); max-width: 100%; height: auto; touch-action: none; }
+
+    .overlay {
+      position: absolute; inset: 0; border-radius: 18px;
+      background: rgba(10, 9, 8, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+    .overlay h2 { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+    .overlay p { font-family: var(--font-mono); font-size: 12px; color: var(--text-2); letter-spacing: 1px; text-transform: uppercase; }
+    .btn {
+      position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 13px 30px; border-radius: 100px;
+      background: var(--grad); color: #1A0D02; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; text-decoration: none; overflow: hidden;
+      transition: box-shadow 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+    }
+    .btn:hover { box-shadow: 0 14px 34px -12px rgba(255, 122, 26, 0.6); transform: translateY(-2px); }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
+    .kbd { background: var(--card); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 9px; font-size: 11px; color: var(--text-2); }
+
+    .game-foot { border-top: 1px solid var(--line); background: var(--bg-2); padding: 22px 0; text-align: center; }
+    .game-foot p { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--text-3); }
+    .game-foot b { color: var(--ember); font-weight: 500; }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+  </style>
+  <link rel="stylesheet" href="arcade-mobile.css">
+</head>
+<body>
+  <nav class="arcade-nav" aria-label="Arcade navigation">
+    <div class="container arcade-nav-inner">
+      <a href="../index.html" class="arcade-logo"><img src="../logo.png" alt="BBCC ICT Fest logo"> BBCC Arcade</a>
+      <div class="arcade-links">
+        <a href="../index.html" aria-label="Back to festival"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back to Fest</a>
+        <a href="index.html" aria-label="All games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="m6.5 16 2-2 2 2 2-2 2 2"/></svg>Arcade</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="game-bar" aria-label="Game switcher">
+    <div class="container game-bar-inner">
+      <a href="snake.html">Snake</a>
+      <a href="pokemon.html">Pokémon</a>
+      <a href="tetris.html">Tetris</a>
+      <a href="2048.html">2048</a>
+      <a href="memory.html">Memory</a>
+      <a href="flappy.html">Flappy Bird</a>
+      <a href="breakout.html" class="on">Breakout</a>
+      <a href="pong.html">Pong</a>
+      <a href="minesweeper.html">Minesweeper</a>
+      <a href="doom.html">Doom</a>
+      <a href="wolf3d.html">Wolfenstein 3D</a>
+      <a href="doom2.html">Doom II</a>
+      <a href="heretic.html">Heretic</a>
+      <a href="quake.html">Quake</a>
+      <a href="keen.html">Commander Keen</a>
+    </div>
+  </div>
+
+  <main class="game-wrap">
+    <div class="container">
+      <div class="game-head">
+        <span class="game-tag">Brick Smasher</span>
+        <h1>Breakout</h1>
+        <p>Move the paddle with your mouse or finger. Smash every brick — don't let the ball drop.</p>
+      </div>
+      <div class="game-arena">
+        <div class="controls">
+          <span class="kbd">Mouse</span><span class="kbd">Touch</span> move paddle
+          <span class="kbd">←</span><span class="kbd">→</span> keyboard
+          <span class="kbd">Space</span> launch
+        </div>
+
+        <div class="game-stats">
+          <div class="stat"><b id="score">0</b><span>Score</span></div>
+          <div class="stat"><b id="lives">3</b><span>Lives</span></div>
+          <div class="stat"><b id="level">1</b><span>Level</span></div>
+          <div class="stat"><b id="best">0</b><span>High Score</span></div>
+        </div>
+        <div class="board-wrap">
+          <canvas id="board" width="640" height="480" aria-label="Breakout canvas"></canvas>
+          <div class="overlay" id="overlay">
+            <h2 id="ovTitle">Breakout</h2>
+            <p id="ovSub">Smash all the bricks</p>
+            <button class="btn" id="restartBtn">Launch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="game-foot">
+    <div class="container"><p>BBCC Arcade &copy; 2026 — part of <b>BBCC ICT Fest</b></p></div>
+  
+    <p><a href="https://mdsalehin.netlify.app/" target="_blank" rel="noopener" style="color:var(--ember);text-decoration:none;">Made by Md Abu Salehin</a></p>
+  </footer>
+
+  <script>
+    (function () {
+      var cv = document.getElementById('board');
+      var ctx = cv.getContext('2d');
+      var W = cv.width, H = cv.height;
+      var scoreEl = document.getElementById('score');
+      var livesEl = document.getElementById('lives');
+      var levelEl = document.getElementById('level');
+      var bestEl = document.getElementById('best');
+      var overlay = document.getElementById('overlay');
+      var ovTitle = document.getElementById('ovTitle');
+      var ovSub = document.getElementById('ovSub');
+
+      var COLS = 8, BASE_ROWS = 5, MAX_ROWS = 9;
+      var BRICK_W = 64, BRICK_H = 20, GAP = 8, TOP = 72;
+      var PADDLE_W = 110, PADDLE_H = 13, PADDLE_Y = H - 30;
+      var BALL_R = 6, MAX_LIVES = 3, MAX_SPEED = 7.5;
+      var ROW_COLORS = ['#FFC24B', '#FF9D45', '#FF7A1A', '#FF5A1A', '#E2260E', '#C71E0B', '#FF7A1A', '#FF9D45', '#FFC24B'];
+
+      var paddle, ball, bricks, rows, score, lives, level, speed, state, raf, lastT, leftKey, rightKey;
+
+      best = parseInt(localStorage.getItem('bbcc_breakout_best') || '0', 10);
+      bestEl.textContent = best;
+
+      function buildBricks() {
+        bricks = [];
+        var totalW = COLS * (BRICK_W + GAP) - GAP;
+        var startX = (W - totalW) / 2;
+        for (var r = 0; r < rows; r++) {
+          for (var c = 0; c < COLS; c++) {
+            bricks.push({
+              x: startX + c * (BRICK_W + GAP),
+              y: TOP + r * (BRICK_H + GAP),
+              w: BRICK_W, h: BRICK_H,
+              alive: true,
+              color: ROW_COLORS[r % ROW_COLORS.length]
+            });
+          }
+        }
+      }
+
+      function reset() {
+        score = 0; lives = MAX_LIVES; level = 1; speed = 3.8; rows = BASE_ROWS;
+        paddle = { x: (W - PADDLE_W) / 2 };
+        ball = null;
+        scoreEl.textContent = 0;
+        livesEl.textContent = lives;
+        levelEl.textContent = 1;
+        buildBricks();
+        state = 'ready';
+        ovTitle.textContent = 'Breakout';
+        ovSub.textContent = 'Smash all the bricks';
+        document.getElementById('restartBtn').textContent = 'Launch';
+        overlay.classList.add('show');
+        draw();
+      }
+
+      function launch() {
+        var ang = (Math.random() * 0.9 + 0.55) * (Math.random() < 0.5 ? -1 : 1);
+        ball = {
+          x: paddle.x + PADDLE_W / 2,
+          y: PADDLE_Y - BALL_R,
+          vx: speed * Math.sin(ang),
+          vy: -speed * Math.cos(ang)
+        };
+        overlay.classList.remove('show');
+        state = 'playing';
+        lastT = null;
+        raf = requestAnimationFrame(loop);
+      }
+
+      function nextLevel() {
+        level++;
+        speed = Math.min(MAX_SPEED, speed + 0.4);
+        rows = Math.min(MAX_ROWS, rows + 1);
+        levelEl.textContent = level;
+        buildBricks();
+        paddle.x = (W - PADDLE_W) / 2;
+        ball = null;
+        state = 'ready';
+        ovTitle.textContent = 'Level ' + level;
+        ovSub.textContent = 'Bricks rebuilt — speed ' + speed.toFixed(1);
+        document.getElementById('restartBtn').textContent = 'Launch';
+        overlay.classList.add('show');
+        draw();
+      }
+
+      function loseLife() {
+        lives--;
+        livesEl.textContent = lives;
+        ball = null;
+        if (lives > 0) {
+          state = 'ready';
+          ovTitle.textContent = 'Ball Lost';
+          ovSub.textContent = lives + ' ' + (lives === 1 ? 'life' : 'lives') + ' left';
+          document.getElementById('restartBtn').textContent = 'Launch';
+          overlay.classList.add('show');
+          draw();
+        } else {
+          state = 'over';
+          cancelAnimationFrame(raf);
+          if (score > best) {
+            best = score;
+            bestEl.textContent = best;
+            localStorage.setItem('bbcc_breakout_best', best);
+          }
+          ovTitle.textContent = 'Game Over';
+          ovSub.textContent = 'Score ' + score + ' · Level ' + level + ' · Best ' + best;
+          document.getElementById('restartBtn').textContent = 'Play Again';
+          overlay.classList.add('show');
+          draw();
+        }
+      }
+
+      function update() {
+        var move = (leftKey ? -1 : 0) + (rightKey ? 1 : 0);
+        paddle.x += move * 7;
+        paddle.x = Math.max(0, Math.min(W - PADDLE_W, paddle.x));
+
+        if (state === 'ready') {
+          draw();
+          return;
+        }
+
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        if (ball.x < BALL_R) { ball.x = BALL_R; ball.vx = Math.abs(ball.vx); }
+        if (ball.x > W - BALL_R) { ball.x = W - BALL_R; ball.vx = -Math.abs(ball.vx); }
+        if (ball.y < BALL_R) { ball.y = BALL_R; ball.vy = Math.abs(ball.vy); }
+
+        if (ball.y + BALL_R > PADDLE_Y && ball.y + BALL_R < PADDLE_Y + PADDLE_H + 6 && ball.vy > 0 &&
+            ball.x > paddle.x - BALL_R && ball.x < paddle.x + PADDLE_W + BALL_R) {
+          var rel = Math.max(-1, Math.min(1, (ball.x - (paddle.x + PADDLE_W / 2)) / (PADDLE_W / 2)));
+          var ang = rel * 1.1;
+          ball.vy = -Math.abs(ball.vy);
+          var ns = Math.min(MAX_SPEED, speed + 0.12);
+          ball.vx = ns * Math.sin(ang);
+          ball.vy = -ns * Math.cos(ang);
+          ball.y = PADDLE_Y - BALL_R;
+        }
+
+        for (var i = 0; i < bricks.length; i++) {
+          var b = bricks[i];
+          if (!b.alive) continue;
+          if (ball.x + BALL_R > b.x && ball.x - BALL_R < b.x + b.w &&
+              ball.y + BALL_R > b.y && ball.y - BALL_R < b.y + b.h) {
+            b.alive = false;
+            var overlapL = (ball.x + BALL_R) - b.x;
+            var overlapR = (b.x + b.w) - (ball.x - BALL_R);
+            var overlapT = (ball.y + BALL_R) - b.y;
+            var overlapB = (b.y + b.h) - (ball.y - BALL_R);
+            var minOv = Math.min(overlapL, overlapR, overlapT, overlapB);
+            if (minOv === overlapL || minOv === overlapR) ball.vx *= -1;
+            else ball.vy *= -1;
+            score += (rows - Math.floor((b.y - TOP) / (BRICK_H + GAP))) * 10 + 10;
+            scoreEl.textContent = score;
+            break;
+          }
+        }
+
+        var alive = false;
+        for (var j = 0; j < bricks.length; j++) {
+          if (bricks[j].alive) { alive = true; break; }
+        }
+        if (!alive) {
+          cancelAnimationFrame(raf);
+          nextLevel();
+          return;
+        }
+
+        if (ball.y > H + BALL_R * 2) {
+          cancelAnimationFrame(raf);
+          loseLife();
+        }
+      }
+
+      function loop(t) {
+        raf = requestAnimationFrame(loop);
+        if (lastT === null) { lastT = t; }
+        var dt = Math.min(2, (t - lastT) / (1000 / 60));
+        lastT = t;
+        for (var i = 0; i < dt; i++) update();
+        draw();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(0, 46);
+        ctx.lineTo(W, 46);
+        ctx.stroke();
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.28)';
+        ctx.textAlign = 'center';
+        ctx.fillText('LEVEL ' + level + ' · BEST ' + best, W / 2, 31);
+
+        for (var i = 0; i < bricks.length; i++) {
+          var b = bricks[i];
+          if (!b.alive) continue;
+          ctx.fillStyle = b.color;
+          ctx.beginPath();
+          ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.16)';
+          ctx.beginPath();
+          ctx.roundRect(b.x + 3, b.y + 3, b.w - 6, 4, 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = '#FF7A1A';
+        ctx.beginPath();
+        ctx.roundRect(paddle.x, PADDLE_Y, PADDLE_W, PADDLE_H, 7);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,194,75,0.85)';
+        ctx.beginPath();
+        ctx.roundRect(paddle.x + PADDLE_W / 2 - 22, PADDLE_Y + 3, 44, 3, 2);
+        ctx.fill();
+
+        if (ball) {
+          ctx.fillStyle = '#F5F1EA';
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+          ctx.beginPath();
+          ctx.arc(ball.x - 2, ball.y - 2, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') leftKey = true;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') rightKey = true;
+        if (e.key === ' ' && state === 'ready') {
+          e.preventDefault();
+          launch();
+        }
+      });
+      document.addEventListener('keyup', function (e) {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') leftKey = false;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') rightKey = false;
+      });
+
+      cv.addEventListener('mousemove', function (e) {
+        var rect = cv.getBoundingClientRect();
+        paddle.x = Math.max(0, Math.min(W - PADDLE_W, (e.clientX - rect.left) * (W / rect.width) - PADDLE_W / 2));
+      });
+      cv.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        var rect = cv.getBoundingClientRect();
+        paddle.x = Math.max(0, Math.min(W - PADDLE_W, (e.touches[0].clientX - rect.left) * (W / rect.width) - PADDLE_W / 2));
+      }, { passive: false });
+
+      document.getElementById('restartBtn').addEventListener('click', function () {
+        if (state === 'over') reset();
+        launch();
+      });
+
+      reset();
+    })();
+  </script>
+  <script src="arcade-mobile.js"></script>
+</body>
+</html>

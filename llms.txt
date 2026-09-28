@@ -1,0 +1,14 @@
+﻿# BBCC ICT Fest — 1st Edition (Completed)
+
+The 1st BBCC ICT Fest was held on September 19, 2026 (09:00–17:00, GMT+6) at Bindubasini Boys' School, Tangail, Bangladesh, organized by Bindubasini Boys' Computer Club (BBCC). 1000+ participants from 30+ schools took part in 5 competitions: ICT Quiz, Innovation Idea & Science Project Showdown, Coding Competition, Chess, and Rubik's Cube.
+
+This website is now the official fest gallery and archive.
+
+## Pages
+- Gallery (home): https://bbccictfest.pro.bd/ — photo gallery of the fest with category filters and lightbox
+- Committee: https://bbccictfest.pro.bd/committee.html — Executive Committee (President, GS, Vice Presidents, secretaries) who organized the fest
+- Arcade: https://bbccictfest.pro.bd/games/ — free browser game collection (unchanged)
+
+## Organizer
+- Bindubasini Boys' Computer Club, Tangail, Bangladesh
+- Contact: club.bbcc@gmail.com

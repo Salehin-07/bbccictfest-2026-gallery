@@ -1,0 +1,464 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Retro Collection — BBCC Arcade | BBCC ICT Fest 2026</title>
+  <meta name="description" content="Play the official Pokémon games from Game Boy, Game Boy Color and Game Boy Advance in your browser — Red, Blue, Yellow, Gold, Silver, Crystal, Ruby, Sapphire, Emerald, FireRed and LeafGreen.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0A0908">
+  <link rel="canonical" href="https://bbccictfest.pro.bd/games/pokemon.html">
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0A0908; --bg-2: #100E0D; --card: #16130F; --card-2: #1D1915;
+      --line: rgba(255, 255, 255, 0.07); --line-2: rgba(255, 255, 255, 0.14);
+      --ember: #FF7A1A; --ember-2: #FF9D45; --ember-soft: rgba(255, 122, 26, 0.10);
+      --ember-line: rgba(255, 122, 26, 0.28); --flame: #E2260E; --gold: #FFC24B;
+      --text: #F5F1EA; --text-2: #A8A097; --text-3: #6B655C;
+      --grad: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    ::selection { background: rgba(255, 122, 26, 0.35); color: #fff; }
+    :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 768px) { .container { padding: 0 20px; } }
+
+    .arcade-nav { position: sticky; top: 0; z-index: 100; background: rgba(10, 9, 8, 0.85); backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); border-bottom: 1px solid var(--line); }
+    .arcade-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+    .arcade-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: var(--font-display); font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+    .arcade-logo img { height: 32px; width: auto; }
+    .arcade-links { display: flex; gap: 8px; }
+    .arcade-links a { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); border-radius: 100px; transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease; }
+    .arcade-links a:hover { color: var(--ember); border-color: var(--ember-line); background: var(--ember-soft); }
+    .arcade-links svg { width: 14px; height: 14px; }
+    @media (max-width: 640px) { .arcade-links a { font-size: 0; padding: 9px 12px; } .arcade-links svg { width: 16px; height: 16px; } }
+
+    .game-bar { border-bottom: 1px solid var(--line); background: var(--bg-2); overflow-x: auto; }
+    .game-bar-inner { display: flex; gap: 8px; padding: 12px 0; width: max-content; }
+    .game-bar a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 7px 14px; border-radius: 100px; border: 1px solid transparent; white-space: nowrap; transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease; }
+    .game-bar a:hover { color: var(--ember); background: var(--ember-soft); }
+    .game-bar a.on { color: #1A0D02; background: var(--grad); font-weight: 700; }
+
+    .game-wrap { padding: clamp(32px, 5vw, 56px) 0 clamp(48px, 6vw, 80px); }
+    .game-head { text-align: center; margin-bottom: 28px; }
+    .game-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 100px; background: var(--ember-soft); border: 1px solid var(--ember-line); color: var(--ember); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+    .game-head h1 { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .game-head p { font-size: 14.5px; color: var(--text-2); max-width: 640px; margin: 0 auto; }
+
+    /* hub grid */
+    .pkmn-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+    .pkmn-head h2 { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .pkmn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    @media (max-width: 1024px) { .pkmn-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 720px) { .pkmn-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .pkmn-grid { grid-template-columns: 1fr; } }
+
+    .pkmn-card {
+      position: relative; display: flex; flex-direction: column; gap: 10px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 22px 20px 20px; text-decoration: none; color: inherit; overflow: hidden;
+      transition: border-color 0.35s ease, transform 0.4s var(--ease-out), background 0.35s ease, box-shadow 0.4s ease, opacity 0.3s ease;
+    }
+    .pkmn-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--grad); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.5s var(--ease-out); }
+    .pkmn-card.playable { cursor: pointer; }
+    .pkmn-card.playable:hover { border-color: var(--ember-line); transform: translateY(-5px); background: var(--card-2); box-shadow: 0 22px 44px -22px rgba(255, 122, 26, 0.18); }
+    .pkmn-card.playable:hover::after { transform: scaleX(1); }
+    .pkmn-card.missing { opacity: 0.55; }
+    .pkmn-card.missing .pkmn-play { color: var(--text-3); }
+    .pkmn-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .pkmn-ico { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; transition: transform 0.45s var(--ease-out), border-radius 0.45s var(--ease-out); }
+    .pkmn-card.playable:hover .pkmn-ico { transform: rotate(-8deg) scale(1.1); border-radius: 17px; }
+    .pkmn-ico svg { width: 24px; height: 24px; }
+    .pkmn-sys { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; border: 1px solid var(--line); color: var(--text-3); background: rgba(255, 255, 255, 0.02); white-space: nowrap; }
+    .pkmn-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+    .pkmn-card p { font-size: 12.5px; color: var(--text-2); line-height: 1.65; flex-grow: 1; }
+    .pkmn-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; }
+    .pkmn-detect { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-3); display: inline-flex; align-items: center; gap: 6px; }
+    .pkmn-detect .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+    .pkmn-card.playable .pkmn-detect { color: #4ADE80; }
+    .pkmn-card.playable .pkmn-detect .dot { background: #4ADE80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.7); }
+    .pkmn-play { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--ember); font-weight: 500; }
+    .pkmn-play svg { width: 13px; height: 13px; transition: transform 0.35s var(--ease-out); }
+    .pkmn-card.playable:hover .pkmn-play svg { transform: translateX(4px); }
+
+    /* player */
+    .pkmn-player { display: none; }
+    .pkmn-player.visible { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .pkmn-back { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); border-radius: 100px; transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease; }
+    .pkmn-back:hover { color: var(--ember); border-color: var(--ember-line); background: var(--ember-soft); }
+    .pkmn-back svg { width: 13px; height: 13px; }
+    .emu-wrap { position: relative; width: min(720px, 100%); background: #000; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7); overflow: hidden; }
+    .emu-wrap .ejs { width: 100% !important; height: 100% !important; }
+    .emu-wrap canvas { display: block; width: 100% !important; height: 100% !important; }
+    .emu-note { max-width: 640px; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); text-align: center; }
+    .emu-note b { color: var(--ember); font-weight: 500; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
+    .kbd { background: var(--card); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 9px; font-size: 11px; color: var(--text-2); }
+
+    /* loading */
+    .pkmn-loading { display: none; flex-direction: column; align-items: center; gap: 18px; padding: 40px 0; text-align: center; }
+    .pkmn-loading.visible { display: flex; }
+    .spin { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--line-2); border-top-color: var(--ember); animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pkmn-loading p { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+
+    .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 2000; background: var(--card-2); border: 1px solid var(--ember-line); color: var(--text); font-size: 13.5px; padding: 13px 22px; border-radius: 12px; box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.8); opacity: 0; transition: transform 0.5s var(--ease-out), opacity 0.4s ease; max-width: min(520px, 90vw); text-align: center; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast b { color: var(--ember); font-weight: 600; }
+
+    .game-foot { border-top: 1px solid var(--line); background: var(--bg-2); padding: 22px 0; text-align: center; }
+    .game-foot p { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--text-3); }
+    .game-foot b { color: var(--ember); font-weight: 500; }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+  </style>
+  <link rel="stylesheet" href="arcade-mobile.css">
+</head>
+<body>
+  <nav class="arcade-nav" aria-label="Arcade navigation">
+    <div class="container arcade-nav-inner">
+      <a href="../index.html" class="arcade-logo"><img src="../logo.png" alt="BBCC ICT Fest logo"> BBCC Arcade</a>
+      <div class="arcade-links">
+        <a href="../index.html" aria-label="Back to festival"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back to Fest</a>
+        <a href="index.html" aria-label="All games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="m6.5 16 2-2 2 2 2-2 2 2"/></svg>Arcade</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="game-bar" aria-label="Game switcher">
+    <div class="container game-bar-inner">
+      <a href="snake.html">Snake</a>
+      <a href="pokemon.html" class="on">Pokémon</a>
+      <a href="tetris.html">Tetris</a>
+      <a href="2048.html">2048</a>
+      <a href="memory.html">Memory</a>
+      <a href="flappy.html">Flappy Bird</a>
+      <a href="breakout.html">Breakout</a>
+      <a href="pong.html">Pong</a>
+      <a href="minesweeper.html">Minesweeper</a>
+      <a href="doom.html">Doom</a>
+      <a href="wolf3d.html">Wolfenstein 3D</a>
+      <a href="doom2.html">Doom II</a>
+      <a href="heretic.html">Heretic</a>
+      <a href="quake.html">Quake</a>
+      <a href="keen.html">Commander Keen</a>
+    </div>
+  </div>
+
+  <main class="game-wrap">
+    <div class="container">
+      <div class="game-head">
+        <span class="game-tag">Game Boy · Game Boy Color · Game Boy Advance</span>
+        <h1>Pokémon <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Retro Collection</span></h1>
+        <p>All eleven official Pokémon games from the Game Boy era, running in your browser. Catch 'em all — the quest starts here.</p>
+      </div>
+
+      <div class="pkmn-loading" id="pkmnLoading">
+        <div class="spin"></div>
+        <p id="pkmnLoadingText">Detecting cartridge files…</p>
+      </div>
+
+      <div class="pkmn-hub" id="pkmnHub">
+        <div class="pkmn-head">
+          <h2>Choose your adventure</h2>
+        </div>
+        <div class="pkmn-grid" id="pkmnGrid"></div>
+      </div>
+
+      <div class="pkmn-player" id="pkmnPlayer">
+        <a href="pokemon.html" class="pkmn-back" id="pkmnBack">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          All Pokémon games
+        </a>
+        <div class="emu-note">
+          <b>On your phone or tablet:</b> tap the fullscreen button (top-right) for the best view, then tap the game screen to start and use the on-screen gamepad to play comfortably.
+        </div>
+        <div class="controls">
+          <span class="kbd">←↑↓→</span> / <span class="kbd">WASD</span> D-pad&nbsp;·&nbsp;          <span class="kbd">Z</span> B&nbsp;·&nbsp;<span class="kbd">X</span> A&nbsp;·&nbsp;<span class="kbd">Enter</span> Start&nbsp;·&nbsp;<span class="kbd">Shift</span> Select&nbsp;·&nbsp;<span class="kbd">Esc</span> menu
+        </div>
+        <div class="emu-wrap">
+          <div id="game"></div>
+        </div>
+        <div class="emu-note">
+          First load downloads the emulator core (<b>~1&nbsp;MB</b>) and caches it — progress saves automatically in your browser.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="game-foot">
+    <div class="container"><p>BBCC Arcade &copy; 2026 — part of <b>BBCC ICT Fest</b> | Pokémon &copy; <b>Nintendo / Game Freak</b>, emulated with EmulatorJS</p></div>
+  
+    <p><a href="https://mdsalehin.netlify.app/" target="_blank" rel="noopener" style="color:var(--ember);text-decoration:none;">Made by Md Abu Salehin</a></p>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var POKEBALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>';
+      var PLAY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+
+      var SYSTEMS = {
+        gb:  { label: 'Game Boy',       core: 'gb',  folder: 'gb'  },
+        gbc: { label: 'Game Boy Color', core: 'gb',  folder: 'gbc' },
+        gba: { label: 'GBA',            core: 'gba', folder: 'gba' }
+      };
+
+      var GAMES = [
+        { id: 'ruby',      name: 'Pokémon Ruby',      sys: 'gba', gen: 3, year: 2002, desc: 'Hoenn, abilities and natures — Groudon blazes on the box art.', files: ['Pokemon - Ruby Version (USA).zip', 'Pokemon_ Ruby Version.zip', 'Pokemon Ruby.zip', 'Pokemon Ruby.gba', 'Pokemon Ruby (USA).gba', 'pokemon ruby.gba', 'PokemonRuby.gba', 'ruby.gba'] },
+        { id: 'sapphire',  name: 'Pokémon Sapphire',  sys: 'gba', gen: 3, year: 2002, desc: 'Deep-sea Kyogre edition — dive under Hoenn\u2019s waves.', files: ['Pokemon - Sapphire Version (USA).zip', 'Pokemon_ Sapphire Version.zip', 'Pokemon Sapphire.zip', 'Pokemon Sapphire.gba', 'Pokemon Sapphire (USA).gba', 'pokemon sapphire.gba', 'PokemonSapphire.gba', 'sapphire.gba'] },
+        { id: 'emerald',   name: 'Pokémon Emerald',   sys: 'gba', gen: 3, year: 2004, desc: 'The Battle Frontier and a Rayquaza showdown above the clouds.', files: ['Pokemon - Emerald Version (USA, Europe).zip', 'Pokemon_ Emerald Version.zip', 'Pokemon Emerald.zip', 'Pokemon Emerald.gba', 'Pokemon Emerald (USA).gba', 'pokemon emerald.gba', 'PokemonEmerald.gba', 'emerald.gba'] },
+        { id: 'firered',   name: 'Pokémon FireRed',   sys: 'gba', gen: 3, year: 2004, desc: 'Kanto remade in GBA glory — Charizard roars back.', files: ['Pokemon - FireRed Version (USA).zip', 'Pokemon_ FireRed Version.zip', 'Pokemon FireRed.zip', 'Pokemon FireRed.gba', 'Pokemon FireRed (USA).gba', 'pokemon firered.gba', 'PokemonFireRed.gba', 'firered.gba'] },
+        { id: 'leafgreen', name: 'Pokémon LeafGreen', sys: 'gba', gen: 3, year: 2004, desc: 'The green half of the remake — Venusaur and the Sevii Isles.', files: ['Pokemon - LeafGreen Version (USA).zip', 'Pokemon_ LeafGreen Version.zip', 'Pokemon LeafGreen.zip', 'Pokemon LeafGreen.gba', 'Pokemon LeafGreen (USA).gba', 'pokemon leafgreen.gba', 'PokemonLeafGreen.gba', 'leafgreen.gba'] },
+        { id: 'gold',      name: 'Pokémon Gold',      sys: 'gbc', gen: 2, year: 1999, desc: 'Johto opens up, the clock ticks and day &amp; night change the world.', files: ['Pokemon_ Gold Version.zip', 'Pokemon - Gold Version (USA, Europe).zip', 'Pokemon Gold.zip', 'Pokemon Gold.gbc', 'Pokemon Gold (USA).gbc', 'pokemon gold.gbc', 'Pokemon Gold.gb', 'PokemonGold.gbc', 'PokemonGold.gb', 'gold.gbc', 'gold.gb'] },
+        { id: 'silver',    name: 'Pokémon Silver',    sys: 'gbc', gen: 2, year: 1999, desc: 'The dark twin of Johto — Lugia awaits in the Whirl Islands.', files: ['Pokemon_ Silver Version.zip', 'Pokemon - Silver Version (USA, Europe).zip', 'Pokemon Silver.zip', 'Pokemon Silver.gbc', 'Pokemon Silver (USA).gbc', 'pokemon silver.gbc', 'Pokemon Silver.gb', 'PokemonSilver.gbc', 'PokemonSilver.gb', 'silver.gbc', 'silver.gb'] },
+        { id: 'crystal',   name: 'Pokémon Crystal',   sys: 'gbc', gen: 2, year: 2000, desc: 'The definitive Gen II — animated sprites and a first shot at Suicune.', files: ['Pokemon_ Crystal Version.zip', 'Pokemon - Crystal Version (USA, Europe).zip', 'Pokemon Crystal.zip', 'Pokemon Crystal.gbc', 'Pokemon Crystal (USA).gbc', 'pokemon crystal.gbc', 'Pokemon Crystal.gb', 'PokemonCrystal.gbc', 'PokemonCrystal.gb', 'crystal.gbc', 'crystal.gb'] },
+        { id: 'red',       name: 'Pokémon Red',       sys: 'gb',  gen: 1, year: 1996, desc: 'The one that started it all — Kanto, Bulbasaur and 151 to catch.', files: ['Pokemon_ Red Version.zip', 'Pokemon - Red Version (USA, Europe).zip', 'Pokemon Red.zip', 'Pokemon Red.gb', 'Pokemon Red (USA).gb', 'pokemon red.gb', 'Pokemon Red Version.gb', 'PokemonRed.gb', 'red.gb'] },
+        { id: 'blue',      name: 'Pokémon Blue',      sys: 'gb',  gen: 1, year: 1996, desc: 'The mirror version — Squirtle, version exclusives and the rivalry begins.', files: ['Pokemon_ Blue Version.zip', 'Pokemon - Blue Version (USA, Europe).zip', 'Pokemon Blue.zip', 'Pokemon Blue.gb', 'Pokemon Blue (USA).gb', 'pokemon blue.gb', 'Pokemon Blue Version.gb', 'PokemonBlue.gb', 'blue.gb'] },
+        { id: 'yellow',    name: 'Pokémon Yellow',    sys: 'gb',  gen: 1, year: 1998, desc: 'Special Pikachu edition — it follows you around, just like in the anime.', files: ['Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip', 'Pokemon - Yellow Version (USA, Europe).zip', 'Pokemon_ Yellow Version.zip', 'Pokemon Yellow.zip', 'Pokemon Yellow.gb', 'Pokemon Yellow (USA).gb', 'pokemon yellow.gb', 'Pokemon Yellow Version.gb', 'PokemonYellow.gb', 'yellow.gb'] }
+      ];
+
+      var ICON_COLORS = [
+        { bg: 'rgba(255, 122, 26, 0.12)', c: '#FF7A1A' },
+        { bg: 'rgba(96, 165, 250, 0.12)', c: '#60A5FA' },
+        { bg: 'rgba(255, 194, 75, 0.10)', c: '#FFC24B' },
+        { bg: 'rgba(34, 197, 94, 0.12)',  c: '#22C55E' },
+        { bg: 'rgba(168, 85, 247, 0.12)', c: '#A855F7' },
+        { bg: 'rgba(255, 71, 87, 0.12)',  c: '#FF4757' },
+        { bg: 'rgba(74, 222, 128, 0.10)', c: '#4ADE80' },
+        { bg: 'rgba(226, 38, 14, 0.12)',  c: '#FF6B4A' },
+        { bg: 'rgba(225, 190, 231, 0.10)',c: '#E1BEE7' },
+        { bg: 'rgba(214, 158, 46, 0.12)', c: '#D69E2E' },
+        { bg: 'rgba(77, 208, 225, 0.10)', c: '#4DD0E1' }
+      ];
+
+      var grid = document.getElementById('pkmnGrid');
+      var hub = document.getElementById('pkmnHub');
+      var player = document.getElementById('pkmnPlayer');
+      var loading = document.getElementById('pkmnLoading');
+      var loadingText = document.getElementById('pkmnLoadingText');
+      var toastEl = document.getElementById('toast');
+      var params = new URLSearchParams(window.location.search);
+      var romCache = {}; // gameId -> { found: bool, url: string }
+      var toastTimer = null;
+      var loaderInjected = false;
+
+      function showToast(msg) {
+        toastEl.innerHTML = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 6000);
+      }
+
+      function probe(url) {
+        return fetch(url, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+          return r.ok;
+        }).catch(function () {
+          return fetch(url, { method: 'GET', cache: 'no-store' }).then(function (r) {
+            return r.ok;
+          }).catch(function () { return false; });
+        });
+      }
+
+      function detectGame(game) {
+        var sys = SYSTEMS[game.sys];
+        var candidates = game.files.map(function (f) { return sys.folder + '/' + f; });
+        return candidates.reduce(function (chain, file) {
+          return chain.then(function (res) {
+            if (res.found) return res;
+            return probe(file).then(function (ok) {
+              if (ok) {
+                return { found: true, file: file.split('/').pop() };
+              }
+              return res;
+            });
+          });
+        }, Promise.resolve({ found: false, file: null }));
+      }
+
+      function detectAll() {
+        loadingText.textContent = 'Detecting cartridge files…';
+        loading.classList.add('visible');
+        var jobs = GAMES.map(function (game) {
+          return detectGame(game).then(function (res) {
+            romCache[game.id] = res;
+          });
+        });
+        return Promise.all(jobs).then(function () {
+          loading.classList.remove('visible');
+          renderGrid();
+        });
+      }
+
+      function renderGrid() {
+        grid.innerHTML = '';
+        GAMES.forEach(function (game, i) {
+          var res = romCache[game.id];
+          var found = res && res.found;
+          var color = ICON_COLORS[i % ICON_COLORS.length];
+          var sys = SYSTEMS[game.sys];
+
+          var card = document.createElement('a');
+          card.className = 'pkmn-card' + (found ? ' playable' : ' missing');
+          card.href = found ? ('pokemon.html?system=' + game.sys + '&rom=' + encodeURIComponent(res.file)) : 'javascript:void(0)';
+          card.setAttribute('aria-label', game.name + (found ? ', play' : ', cartridge not found'));
+          if (!found) {
+            card.addEventListener('click', function (e) {
+              e.preventDefault();
+              showToast('Cartridge not found yet — drop <b>' + res.file + '</b> (or any &quot;' + game.name + '&quot; ROM) into the <b>' + sys.folder + '/</b> folder and it will appear here.');
+            });
+          }
+          card.innerHTML =
+            '<div class="pkmn-top">' +
+              '<div class="pkmn-ico" style="background:' + color.bg + ';color:' + color.c + ';">' + POKEBALL + '</div>' +
+              '<span class="pkmn-sys">' + sys.label + '</span>' +
+            '</div>' +
+            '<h3>' + game.name + '</h3>' +
+            '<p>' + game.desc + '</p>' +
+            '<div class="pkmn-status">' +
+              '<span class="pkmn-detect"><span class="dot"></span>' + (found ? 'Ready to play' : 'No cartridge') + '</span>' +
+              '<span class="pkmn-play">' + (found ? 'Play ' + PLAY_ICON : 'Add ROM') + '</span>' +
+            '</div>';
+          grid.appendChild(card);
+        });
+      }
+
+      function bootGame(system, rom) {
+        var sys = SYSTEMS[system];
+        if (!sys) return false;
+
+        hub.style.display = 'none';
+        loading.classList.remove('visible');
+        player.classList.add('visible');
+
+        window.EJS_player = '#game';
+        window.EJS_core = sys.core;
+        window.EJS_gameUrl = rom;
+        window.EJS_pathtodata = 'emulatorjs/';
+        window.EJS_startOnLoaded = true;
+        window.EJS_color = '#FF7A1A';
+        window.EJS_theme = '#0A0908';
+        window.EJS_backgroundColor = '#0A0908';
+        window.EJS_volume = 1.0;
+        window.EJS_defaultControls = {
+          0: {
+             0:  { value: 'z',     value2: 'BUTTON_2' },
+            2:  { value: 'shift', value2: 'SELECT' },
+            3:  { value: 'enter', value2: 'START' },
+            4:  { value: 'up arrow',    value2: 'DPAD_UP' },
+            5:  { value: 'down arrow',  value2: 'DPAD_DOWN' },
+            6:  { value: 'left arrow',  value2: 'DPAD_LEFT' },
+            7:  { value: 'right arrow', value2: 'DPAD_RIGHT' },
+             8:  { value: 'x',     value2: 'BUTTON_1' },
+            10: { value: 'q',     value2: 'LEFT_TOP_SHOULDER' },
+            11: { value: 'e',     value2: 'RIGHT_TOP_SHOULDER' },
+            12: { value: 'tab',   value2: 'LEFT_BOTTOM_SHOULDER' },
+            13: { value: 'r',     value2: 'RIGHT_BOTTOM_SHOULDER' },
+            14: { value: '',      value2: 'LEFT_STICK' },
+            15: { value: '',      value2: 'RIGHT_STICK' },
+            16: { value: 'h',     value2: 'LEFT_STICK_X:+1' },
+            17: { value: 'f',     value2: 'LEFT_STICK_X:-1' },
+            18: { value: 'g',     value2: 'LEFT_STICK_Y:+1' },
+            19: { value: 't',     value2: 'LEFT_STICK_Y:-1' },
+            20: { value: 'l',     value2: 'RIGHT_STICK_X:+1' },
+            21: { value: 'j',     value2: 'RIGHT_STICK_X:-1' },
+            22: { value: 'k',     value2: 'RIGHT_STICK_Y:+1' },
+            23: { value: 'i',     value2: 'RIGHT_STICK_Y:-1' },
+            24: { value: '1' },
+            25: { value: '2' },
+            26: { value: '3' },
+            27: {},
+            28: {},
+            29: {}
+          },
+          1: {},
+          2: {},
+          3: {}
+        };
+
+        window.EJS_Buttons = { gamepad: false, playPause: true, restart: true, mute: true, fullscreen: true, saveGame: true, loadGame: true, volume: true, settings: true, cheat: false };
+
+        for (var i = localStorage.length - 1; i >= 0; i--) {
+          var key = localStorage.key(i);
+          if (key && key.indexOf('ejs-') === 0 && key.indexOf('-settings') !== -1) {
+            try {
+              var saved = JSON.parse(localStorage.getItem(key));
+              saved.controlSettings = JSON.parse(JSON.stringify(window.EJS_defaultControls));
+              localStorage.setItem(key, JSON.stringify(saved));
+            } catch (e) {}
+          }
+        }
+
+        if (!window.__wasdBound) {
+          window.__wasdBound = true;
+          var wasdMap = { w: 4, s: 5, a: 6, d: 7 };
+          document.addEventListener('keydown', function (e) {
+            var j = wasdMap[(e.key || '').toLowerCase()];
+            if (j !== undefined && window.EJS_emulator && window.EJS_emulator.started) {
+              window.EJS_emulator.gameManager.simulateInput(0, j, 1);
+            }
+          });
+          document.addEventListener('keyup', function (e) {
+            var j = wasdMap[(e.key || '').toLowerCase()];
+            if (j !== undefined && window.EJS_emulator && window.EJS_emulator.started) {
+              window.EJS_emulator.gameManager.simulateInput(0, j, 0);
+            }
+          });
+        }
+
+        var s = document.createElement('script');
+        s.src = 'emulatorjs/loader.js';
+        s.onerror = function () {
+          showToast('Failed to load the emulator — check the console for details.');
+        };
+        if (loaderInjected) {
+          window.EJS_gameUrl = rom;
+          return true;
+        }
+        loaderInjected = true;
+        document.body.appendChild(s);
+        return true;
+      }
+
+      document.getElementById('pkmnBack').addEventListener('click', function () {
+        window.location.href = 'pokemon.html';
+      });
+
+      var sysParam = params.get('system');
+      var romParam = params.get('rom');
+
+      if (sysParam && SYSTEMS[sysParam] && romParam) {
+        var fullPath = SYSTEMS[sysParam].folder + '/' + romParam;
+        loadingText.textContent = 'Checking cartridge…';
+        loading.classList.add('visible');
+        probe(fullPath).then(function (ok) {
+          if (ok) {
+            bootGame(sysParam, encodeURI(fullPath));
+          } else {
+            loading.classList.remove('visible');
+            detectAll().then(function () {
+              showToast('That cartridge file is missing — the list below shows what\u2019s available. Drop your ROM into the <b>' + SYSTEMS[sysParam].folder + '/</b> folder and it will appear here.');
+            });
+          }
+        });
+      } else {
+        detectAll();
+      }
+    })();
+  </script>
+  <script src="arcade-mobile.js"></script>
+</body>
+</html>

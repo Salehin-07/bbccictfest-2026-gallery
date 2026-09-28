@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong — BBCC Arcade | BBCC ICT Fest 2026</title>
+  <meta name="description" content="Play Pong for free — beat the computer in a classic paddle duel on the BBCC Arcade.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0A0908">
+  <link rel="canonical" href="https://bbccictfest.pro.bd/games/pong.html">
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0A0908; --bg-2: #100E0D; --card: #16130F; --card-2: #1D1915;
+      --line: rgba(255, 255, 255, 0.07); --line-2: rgba(255, 255, 255, 0.14);
+      --ember: #FF7A1A; --ember-2: #FF9D45; --ember-soft: rgba(255, 122, 26, 0.10);
+      --ember-line: rgba(255, 122, 26, 0.28); --flame: #E2260E; --gold: #FFC24B;
+      --text: #F5F1EA; --text-2: #A8A097; --text-3: #6B655C;
+      --grad: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    ::selection { background: rgba(255, 122, 26, 0.35); color: #fff; }
+    :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 768px) { .container { padding: 0 20px; } }
+
+    .arcade-nav { position: sticky; top: 0; z-index: 100; background: rgba(10, 9, 8, 0.85); backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3); border-bottom: 1px solid var(--line); }
+    .arcade-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+    .arcade-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: var(--font-display); font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+    .arcade-logo img { height: 32px; width: auto; }
+    .arcade-links { display: flex; gap: 8px; }
+    .arcade-links a { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); border-radius: 100px; transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease; }
+    .arcade-links a:hover { color: var(--ember); border-color: var(--ember-line); background: var(--ember-soft); }
+    .arcade-links svg { width: 14px; height: 14px; }
+    @media (max-width: 640px) { .arcade-links a { font-size: 0; padding: 9px 12px; } .arcade-links svg { width: 16px; height: 16px; } }
+
+    .game-bar { border-bottom: 1px solid var(--line); background: var(--bg-2); overflow-x: auto; }
+    .game-bar-inner { display: flex; gap: 8px; padding: 12px 0; width: max-content; }
+    .game-bar a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2); text-decoration: none; padding: 7px 14px; border-radius: 100px; border: 1px solid transparent; white-space: nowrap; transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease; }
+    .game-bar a:hover { color: var(--ember); background: var(--ember-soft); }
+    .game-bar a.on { color: #1A0D02; background: var(--grad); font-weight: 700; }
+
+    .game-wrap { padding: clamp(32px, 5vw, 56px) 0 clamp(48px, 6vw, 80px); }
+    .game-head { text-align: center; margin-bottom: 28px; }
+    .game-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 100px; background: var(--ember-soft); border: 1px solid var(--ember-line); color: var(--ember); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+    .game-head h1 { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .game-head p { font-size: 14.5px; color: var(--text-2); max-width: 520px; margin: 0 auto; }
+
+    .game-arena { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .game-stats { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 22px; text-align: center; min-width: 110px; }
+    .stat b { font-family: var(--font-display); font-size: 24px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; display: block; line-height: 1.2; }
+    .stat span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+
+    .board-wrap { position: relative; }
+    canvas { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7); max-width: 100%; height: auto; touch-action: none; }
+
+    .overlay {
+      position: absolute; inset: 0; border-radius: 18px;
+      background: rgba(10, 9, 8, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+    .overlay h2 { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+    .overlay p { font-family: var(--font-mono); font-size: 12px; color: var(--text-2); letter-spacing: 1px; text-transform: uppercase; }
+    .btn {
+      position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 13px 30px; border-radius: 100px;
+      background: var(--grad); color: #1A0D02; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; text-decoration: none; overflow: hidden;
+      transition: box-shadow 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+    }
+    .btn:hover { box-shadow: 0 14px 34px -12px rgba(255, 122, 26, 0.6); transform: translateY(-2px); }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
+    .kbd { background: var(--card); border: 1px solid var(--line-2); border-radius: 6px; padding: 3px 9px; font-size: 11px; color: var(--text-2); }
+
+    .game-foot { border-top: 1px solid var(--line); background: var(--bg-2); padding: 22px 0; text-align: center; }
+    .game-foot p { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--text-3); }
+    .game-foot b { color: var(--ember); font-weight: 500; }
+
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+  </style>
+  <link rel="stylesheet" href="arcade-mobile.css">
+</head>
+<body>
+  <nav class="arcade-nav" aria-label="Arcade navigation">
+    <div class="container arcade-nav-inner">
+      <a href="../index.html" class="arcade-logo"><img src="../logo.png" alt="BBCC ICT Fest logo"> BBCC Arcade</a>
+      <div class="arcade-links">
+        <a href="../index.html" aria-label="Back to festival"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back to Fest</a>
+        <a href="index.html" aria-label="All games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="m6.5 16 2-2 2 2 2-2 2 2"/></svg>Arcade</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="game-bar" aria-label="Game switcher">
+    <div class="container game-bar-inner">
+      <a href="snake.html">Snake</a>
+      <a href="pokemon.html">Pokémon</a>
+      <a href="tetris.html">Tetris</a>
+      <a href="2048.html">2048</a>
+      <a href="memory.html">Memory</a>
+      <a href="flappy.html">Flappy Bird</a>
+      <a href="breakout.html">Breakout</a>
+      <a href="pong.html" class="on">Pong</a>
+      <a href="minesweeper.html">Minesweeper</a>
+      <a href="doom.html">Doom</a>
+      <a href="wolf3d.html">Wolfenstein 3D</a>
+      <a href="doom2.html">Doom II</a>
+      <a href="heretic.html">Heretic</a>
+      <a href="quake.html">Quake</a>
+      <a href="keen.html">Commander Keen</a>
+    </div>
+  </div>
+
+  <main class="game-wrap">
+    <div class="container">
+      <div class="game-head">
+        <span class="game-tag">Paddle Duel</span>
+        <h1>Pong</h1>
+        <p>Two players, one screen. Player 1 uses <b>W / S</b> (or the left half on touch), Player 2 uses <b>↑ / ↓</b> (or the right half). First to 7 wins.</p>
+      </div>
+      <div class="game-arena">
+        <div class="controls">
+          <span class="kbd">W</span><span class="kbd">S</span> Player 1
+          <span class="kbd">↑</span><span class="kbd">↓</span> Player 2
+          <span class="kbd">Touch</span> left / right halves
+        </div>
+
+        <div class="game-stats">
+          <div class="stat"><b id="you">0</b><span>Player 1</span></div>
+          <div class="stat"><b id="cpu">0</b><span>Player 2</span></div>
+          <div class="stat"><b id="wins">0</b><span>P1 Streak</span></div>
+        </div>
+        <div class="board-wrap">
+          <canvas id="board" width="640" height="360" aria-label="Pong canvas"></canvas>
+          <div class="overlay" id="overlay">
+            <h2 id="ovTitle">First to 7</h2>
+            <p id="ovSub">Player 1 vs Player 2</p>
+            <button class="btn" id="restartBtn">Serve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="game-foot">
+    <div class="container"><p>BBCC Arcade &copy; 2026 — part of <b>BBCC ICT Fest</b></p></div>
+  
+    <p><a href="https://mdsalehin.netlify.app/" target="_blank" rel="noopener" style="color:var(--ember);text-decoration:none;">Made by Md Abu Salehin</a></p>
+  </footer>
+
+  <script>
+    (function () {
+      var cv = document.getElementById('board');
+      var ctx = cv.getContext('2d');
+      var W = cv.width, H = cv.height;
+      var youEl = document.getElementById('you');
+      var cpuEl = document.getElementById('cpu');
+      var winsEl = document.getElementById('wins');
+      var overlay = document.getElementById('overlay');
+      var ovTitle = document.getElementById('ovTitle');
+      var ovSub = document.getElementById('ovSub');
+
+      var PADDLE_W = 12, PADDLE_H = 78, BALL_R = 7, WIN_SCORE = 7, CPU_SPEED = 3.6;
+      var you, cpu, ball, youScore, cpuScore, streak, best, state, raf, lastT, serveWait;
+
+      best = parseInt(localStorage.getItem('bbcc_pong_best') || '0', 10);
+      winsEl.textContent = best;
+
+      function reset() {
+        youScore = 0; cpuScore = 0;
+        you = { y: H / 2 - PADDLE_H / 2 };
+        cpu = { y: H / 2 - PADDLE_H / 2 };
+        youEl.textContent = 0;
+        cpuEl.textContent = 0;
+        state = 'ready';
+        ovTitle.textContent = 'First to 7';
+        ovSub.textContent = 'Beat the CPU';
+        overlay.classList.add('show');
+        draw();
+      }
+
+      function serve() {
+        overlay.classList.remove('show');
+        state = 'playing';
+        ball = {
+          x: W / 2, y: H / 2,
+          vx: (Math.random() < 0.5 ? -1 : 1) * 4.6,
+          vy: (Math.random() * 2 - 1) * 3
+        };
+        serveWait = 0;
+        lastT = null;
+        raf = requestAnimationFrame(loop);
+      }
+
+      function update() {
+        serveWait++;
+        if (serveWait < 40) return;
+
+        you.y += keys.y * 6;
+        you.y = Math.max(0, Math.min(H - PADDLE_H, you.y));
+
+        cpu.y += keys2.y * 6;
+        cpu.y = Math.max(0, Math.min(H - PADDLE_H, cpu.y));
+
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        if (ball.y < BALL_R) { ball.y = BALL_R; ball.vy *= -1; }
+        if (ball.y > H - BALL_R) { ball.y = H - BALL_R; ball.vy *= -1; }
+
+        if (ball.vx < 0 && ball.x - BALL_R < 20 && ball.x > 0) {
+          if (ball.y > you.y - BALL_R && ball.y < you.y + PADDLE_H + BALL_R) {
+            var rel = (ball.y - (you.y + PADDLE_H / 2)) / (PADDLE_H / 2);
+            ball.vy = rel * 6.5;
+            ball.vx = Math.abs(ball.vx) + 0.35;
+            ball.x = 20 + BALL_R;
+          } else if (ball.x < -BALL_R) {
+            cpuScore++;
+            cpuEl.textContent = cpuScore;
+            checkWinner();
+            if (state === 'playing') serve();
+          }
+        }
+
+        if (ball.vx > 0 && ball.x + BALL_R > W - 20 && ball.x < W) {
+          if (ball.y > cpu.y - BALL_R && ball.y < cpu.y + PADDLE_H + BALL_R) {
+            var rel2 = (ball.y - (cpu.y + PADDLE_H / 2)) / (PADDLE_H / 2);
+            ball.vy = rel2 * 6.5;
+            ball.vx = -(Math.abs(ball.vx) + 0.35);
+            ball.x = W - 20 - BALL_R;
+          } else if (ball.x > W + BALL_R) {
+            youScore++;
+            youEl.textContent = youScore;
+            checkWinner();
+            if (state === 'playing') serve();
+          }
+        }
+      }
+
+      function checkWinner() {
+        if (youScore >= WIN_SCORE || cpuScore >= WIN_SCORE) {
+          state = 'over';
+          cancelAnimationFrame(raf);
+          if (youScore >= WIN_SCORE) {
+            streak++;
+            if (streak > best) {
+              best = streak;
+              winsEl.textContent = best;
+              localStorage.setItem('bbcc_pong_best', best);
+            }
+            ovTitle.textContent = 'Player 1 Wins!';
+            ovSub.textContent = youScore + '–' + cpuScore + ' · ' + streak + ' streak';
+          } else {
+            streak = 0;
+            ovTitle.textContent = 'Player 2 Wins';
+            ovSub.textContent = youScore + '–' + cpuScore;
+          }
+          overlay.classList.add('show');
+        }
+      }
+
+      function loop(t) {
+        raf = requestAnimationFrame(loop);
+        if (lastT === null) { lastT = t; }
+        var dt = Math.min(2, (t - lastT) / (1000 / 60));
+        lastT = t;
+        for (var i = 0; i < dt; i++) update();
+        draw();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.setLineDash([6, 10]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(W / 2, 10);
+        ctx.lineTo(W / 2, H - 10);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#FFC24B';
+        ctx.beginPath();
+        ctx.roundRect(16, you.y, PADDLE_W, PADDLE_H, 5);
+        ctx.fill();
+
+        ctx.fillStyle = '#E2260E';
+        ctx.beginPath();
+        ctx.roundRect(W - 16 - PADDLE_W, cpu.y, PADDLE_W, PADDLE_H, 5);
+        ctx.fill();
+
+        if (state === 'playing') {
+          ctx.fillStyle = '#F5F1EA';
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.font = '700 44px "Space Grotesk", sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.textAlign = 'center';
+        ctx.fillText(youScore, W / 2 - 70, 64);
+        ctx.fillText(cpuScore, W / 2 + 70, 64);
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.28)';
+        ctx.fillText('FIRST TO 7', W / 2, 30);
+      }
+
+      var keys = { y: 0 }, keys2 = { y: 0 };
+      function setKey(e, down) {
+        var k = (e.key || '').toLowerCase();
+        if (k === 'w') keys.y = down ? -1 : 0;
+        else if (k === 's') keys.y = down ? 1 : 0;
+        else if (e.key === 'ArrowUp') keys2.y = down ? -1 : 0;
+        else if (e.key === 'ArrowDown') keys2.y = down ? 1 : 0;
+      }
+      document.addEventListener('keydown', function (e) { setKey(e, true); });
+      document.addEventListener('keyup', function (e) { setKey(e, false); });
+
+      function moveFromY(target, clientY, rect) {
+        target.y = Math.max(0, Math.min(H - PADDLE_H, (clientY - rect.top) * (H / rect.height) - PADDLE_H / 2));
+      }
+      cv.addEventListener('mousemove', function (e) {
+        moveFromY(you, e.clientY, cv.getBoundingClientRect());
+      });
+      cv.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        var rect = cv.getBoundingClientRect();
+        var mid = rect.left + rect.width / 2;
+        for (var i = 0; i < e.touches.length; i++) {
+          var t = e.touches[i];
+          if (t.clientX < mid) moveFromY(you, t.clientY, rect);
+          else moveFromY(cpu, t.clientY, rect);
+        }
+      }, { passive: false });
+
+      document.getElementById('restartBtn').addEventListener('click', function () {
+        if (state === 'over') reset();
+        serve();
+      });
+
+      reset();
+    })();
+  </script>
+  <script src="arcade-mobile.js"></script>
+</body>
+</html>

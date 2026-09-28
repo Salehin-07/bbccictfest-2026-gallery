@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBCC Arcade — Free Browser Games | BBCC ICT Fest 2026</title>
+  <meta name="description" content="Play free browser games — Snake, Tetris, 2048, Flappy Bird, Pong, Breakout, Memory, Minesweeper, Doom and all eleven classic Pokémon games — on the BBCC Arcade, part of BBCC ICT Fest 2026.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0A0908">
+  <link rel="canonical" href="https://bbccictfest.pro.bd/games/">
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="BBCC Arcade — Free Browser Games">
+  <meta property="og:description" content="Snake, Tetris, 2048, Flappy Bird, Pong, Breakout, Memory, Minesweeper, Doom and all eleven classic Pokémon games — free browser games by BBCC ICT Fest 2026.">
+  <meta property="og:url" content="https://bbccictfest.pro.bd/games/">
+  <meta property="og:image" content="https://bbccictfest.pro.bd/logo.png">
+  <meta property="og:image:alt" content="BBCC Arcade — free browser games by BBCC ICT Fest">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BBCC Arcade — Free Browser Games">
+  <meta name="twitter:description" content="Snake, Tetris, 2048, Flappy Bird, Pong, Breakout, Memory, Minesweeper, Doom and eleven classic Pokémon games — free in your browser.">
+  <meta name="twitter:image" content="https://bbccictfest.pro.bd/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0A0908; --bg-2: #100E0D; --card: #16130F; --card-2: #1D1915;
+      --line: rgba(255, 255, 255, 0.07); --line-2: rgba(255, 255, 255, 0.14);
+      --ember: #FF7A1A; --ember-2: #FF9D45; --ember-soft: rgba(255, 122, 26, 0.10);
+      --ember-line: rgba(255, 122, 26, 0.28); --flame: #E2260E; --gold: #FFC24B;
+      --text: #F5F1EA; --text-2: #A8A097; --text-3: #6B655C;
+      --grad: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E);
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body); background: var(--bg); color: var(--text);
+      line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    ::selection { background: rgba(255, 122, 26, 0.35); color: #fff; }
+    :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 768px) { .container { padding: 0 20px; } }
+
+    /* mini nav */
+    .arcade-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10, 9, 8, 0.85); backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      border-bottom: 1px solid var(--line);
+    }
+    .arcade-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+    .arcade-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: var(--font-display); font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+    .arcade-logo img { height: 32px; width: auto; }
+    .arcade-back {
+      display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono);
+      font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-2);
+      text-decoration: none; padding: 8px 16px; border: 1px solid var(--line); border-radius: 100px;
+      transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+    .arcade-back:hover { color: var(--ember); border-color: var(--ember-line); background: var(--ember-soft); }
+    .arcade-back svg { width: 14px; height: 14px; }
+
+    /* hero */
+    .arcade-hero { padding: clamp(56px, 8vw, 96px) 0 40px; text-align: center; position: relative; }
+    .arcade-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255, 122, 26, 0.09) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .arcade-tag {
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 100px;
+      background: var(--ember-soft); border: 1px solid var(--ember-line); color: var(--ember);
+      font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    .arcade-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 10px var(--ember); animation: blink 1.6s ease-in-out infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .arcade-title { font-family: var(--font-display); font-size: clamp(36px, 5.5vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 14px; }
+    .arcade-sub { font-size: 16px; color: var(--text-2); max-width: 600px; margin: 0 auto; line-height: 1.75; }
+
+    /* game grid */
+    .game-grid { padding: 24px 0 clamp(64px, 8vw, 96px); }
+    .game-grid-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media (max-width: 1024px) { .game-grid-inner { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .game-grid-inner { grid-template-columns: 1fr; } }
+
+    .game-card {
+      position: relative; display: flex; flex-direction: column; gap: 12px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      padding: 26px 24px 24px; text-decoration: none; color: inherit; overflow: hidden;
+      transition: border-color 0.35s ease, transform 0.4s var(--ease-out), background 0.35s ease, box-shadow 0.4s ease;
+    }
+    .game-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(360px circle at var(--mx, 50%) var(--my, -20%), rgba(255, 122, 26, 0.08), transparent 60%);
+      opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+    }
+    .game-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--grad); transform: scaleX(0); transform-origin: 0 50%;
+      transition: transform 0.5s var(--ease-out);
+    }
+    .game-card:hover { border-color: var(--ember-line); transform: translateY(-6px); background: var(--card-2); box-shadow: 0 24px 48px -22px rgba(255, 122, 26, 0.18); }
+    .game-card:hover::before { opacity: 1; }
+    .game-card:hover::after { transform: scaleX(1); }
+
+    .game-ico {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.45s var(--ease-out), border-radius 0.45s var(--ease-out);
+    }
+    .game-card:hover .game-ico { transform: rotate(-8deg) scale(1.1); border-radius: 18px; }
+    .game-ico svg { width: 26px; height: 26px; }
+    .g-1 { background: rgba(255, 122, 26, 0.12); color: var(--ember); }
+    .g-2 { background: rgba(226, 38, 14, 0.12); color: #FF6B4A; }
+    .g-3 { background: rgba(255, 194, 75, 0.10); color: var(--gold); }
+    .g-4 { background: rgba(74, 222, 128, 0.10); color: #4ADE80; }
+    .g-5 { background: rgba(110, 168, 255, 0.10); color: #6EA8FF; }
+    .g-6 { background: rgba(77, 208, 225, 0.10); color: #4DD0E1; }
+    .g-7 { background: rgba(255, 107, 74, 0.10); color: #FF6B4A; }
+    .g-8 { background: rgba(225, 190, 231, 0.10); color: #E1BEE7; }
+    .g-9 { background: rgba(255, 61, 61, 0.12); color: #FF3D3D; }
+    .g-10 { background: rgba(214, 158, 46, 0.12); color: #D69E2E; }
+    .g-11 { background: rgba(255, 71, 87, 0.12); color: #FF4757; }
+    .g-12 { background: rgba(168, 85, 247, 0.12); color: #A855F7; }
+    .g-13 { background: rgba(34, 197, 94, 0.12); color: #22C55E; }
+    .g-14 { background: rgba(96, 165, 250, 0.12); color: #60A5FA; }
+    .g-15 { background: rgba(255, 122, 26, 0.12); color: #FF7A1A; }
+    .g-16 { background: rgba(96, 165, 250, 0.12); color: #60A5FA; }
+    .g-17 { background: rgba(255, 194, 75, 0.10); color: #FFC24B; }
+    .g-18 { background: rgba(34, 197, 94, 0.12); color: #22C55E; }
+    .g-19 { background: rgba(168, 85, 247, 0.12); color: #A855F7; }
+    .g-20 { background: rgba(255, 71, 87, 0.12); color: #FF4757; }
+    .g-21 { background: rgba(74, 222, 128, 0.10); color: #4ADE80; }
+    .g-22 { background: rgba(226, 38, 14, 0.12); color: #FF6B4A; }
+    .g-23 { background: rgba(225, 190, 231, 0.10); color: #E1BEE7; }
+    .g-24 { background: rgba(214, 158, 46, 0.12); color: #D69E2E; }
+    .g-25 { background: rgba(77, 208, 225, 0.10); color: #4DD0E1; }
+
+    .game-card h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+    .game-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.7; flex-grow: 1; }
+    .game-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .game-diff {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 100px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--line); color: var(--text-3);
+    }
+    .game-play {
+      display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ember); font-weight: 500;
+    }
+    .game-play svg { width: 14px; height: 14px; transition: transform 0.35s var(--ease-out); }
+    .game-card:hover .game-play svg { transform: translateX(4px); }
+
+    /* footer */
+    .arcade-foot { border-top: 1px solid var(--line); background: var(--bg-2); padding: 24px 0; text-align: center; }
+    .arcade-foot p { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 1px; color: var(--text-3); }
+    .arcade-foot b { color: var(--ember); font-weight: 500; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="arcade-nav" aria-label="Arcade navigation">
+    <div class="container arcade-nav-inner">
+      <a href="../index.html" class="arcade-logo">
+        <img src="../logo.png" alt="BBCC ICT Fest logo">
+        BBCC Arcade
+      </a>
+      <a href="../index.html" class="arcade-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Gallery
+      </a>
+    </div>
+  </nav>
+
+  <section class="arcade-hero">
+    <div class="container">
+      <span class="arcade-tag">Free Browser Games</span>
+      <h1 class="arcade-title">The <span class="gradient-text" style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">BBCC Arcade</span></h1>
+      <p class="arcade-sub">Twenty-five classic games, free to play in your browser — including the full Pokémon collection from Game Boy, Game Boy Color and Game Boy Advance. Beat your high score, challenge a friend, and take a break between competitions.</p>
+    </div>
+  </section>
+
+  <section class="game-grid">
+    <div class="container game-grid-inner">
+      <a href="doom.html" class="game-card" data-card>
+        <div class="game-ico g-9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <h3>Doom</h3>
+        <p>The 1993 original FPS, running on DOSBox in your browser. Click to grab the mouse and rip and tear.</p>
+        <div class="game-meta">
+          <span class="game-diff">Legendary</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gba&rom=Pokemon%20-%20Ruby%20Version%20(USA).zip" class="game-card" data-card>
+        <div class="game-ico g-21">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Ruby</h3>
+        <p>Hoenn in 32-bit color — abilities, natures and Groudon on the box.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBA</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gba&rom=Pokemon%20-%20Sapphire%20Version%20(USA).zip" class="game-card" data-card>
+        <div class="game-ico g-22">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Sapphire</h3>
+        <p>Dive beneath Hoenn's waves and meet the mighty Kyogre.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBA</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gba&rom=Pokemon%20-%20Emerald%20Version%20(USA,%20Europe).zip" class="game-card" data-card>
+        <div class="game-ico g-23">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Emerald</h3>
+        <p>The Battle Frontier awaits — and a Rayquaza showdown in the sky.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBA</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gba&rom=Pokemon%20-%20FireRed%20Version%20(USA).zip" class="game-card" data-card>
+        <div class="game-ico g-24">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon FireRed</h3>
+        <p>Kanto, remade — Charizard roars back on the Game Boy Advance.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBA</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gba&rom=Pokemon%20-%20LeafGreen%20Version%20(USA).zip" class="game-card" data-card>
+        <div class="game-ico g-25">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon LeafGreen</h3>
+        <p>Venusaur and the Sevii Isles — the green half of the Kanto remake.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBA</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gbc&rom=Pokemon_%20Gold%20Version.zip" class="game-card" data-card>
+        <div class="game-ico g-18">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Gold</h3>
+        <p>Johto arrives in color — a real-time clock, day &amp; night and 100 more Pokémon.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBC</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gbc&rom=Pokemon_%20Silver%20Version.zip" class="game-card" data-card>
+        <div class="game-ico g-19">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Silver</h3>
+        <p>The moonlit twin of Johto — catch Lugia in the Whirl Islands.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBC</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gbc&rom=Pokemon_%20Crystal%20Version.zip" class="game-card" data-card>
+        <div class="game-ico g-20">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Crystal</h3>
+        <p>The definitive Gen II — animated sprites and a mysterious chase after Suicune.</p>
+        <div class="game-meta">
+          <span class="game-diff">GBC</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gb&rom=Pokemon_%20Red%20Version.zip" class="game-card" data-card>
+        <div class="game-ico g-15">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Red</h3>
+        <p>The 1996 original — Kanto, 151 Pokémon and the journey that started it all.</p>
+        <div class="game-meta">
+          <span class="game-diff">Game Boy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gb&rom=Pokemon_%20Blue%20Version.zip" class="game-card" data-card>
+        <div class="game-ico g-16">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Blue</h3>
+        <p>Squirtle, version-exclusive Pokémon and the mirror journey through Kanto.</p>
+        <div class="game-meta">
+          <span class="game-diff">Game Boy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pokemon.html?system=gb&rom=Pokemon%20-%20Yellow%20Version%20-%20Special%20Pikachu%20Edition%20(USA,%20Europe)%20(CGB%2BSGB%20Enhanced).zip" class="game-card" data-card>
+        <div class="game-ico g-17">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Pokémon Yellow</h3>
+        <p>The anime-inspired special edition — Pikachu walks beside you from the start.</p>
+        <div class="game-meta">
+          <span class="game-diff">Game Boy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="snake.html" class="game-card" data-card>
+        <div class="game-ico g-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h4a3 3 0 0 0 0-6H3v16"/><path d="M21 5v6a4 4 0 0 1-4 4h-7"/><circle cx="17" cy="19" r="1.5"/></svg>
+        </div>
+        <h3>Snake</h3>
+        <p>Grow the snake, eat the food, don't hit the walls. The classic that started it all.</p>
+        <div class="game-meta">
+          <span class="game-diff">Easy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="tetris.html" class="game-card" data-card>
+        <div class="game-ico g-2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/><rect x="11" y="19" width="6" height="3" rx="1"/></svg>
+        </div>
+        <h3>Tetris</h3>
+        <p>Stack the falling blocks, clear the lines, survive as long as you can.</p>
+        <div class="game-meta">
+          <span class="game-diff">Medium</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="2048.html" class="game-card" data-card>
+        <div class="game-ico g-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><rect x="6.5" y="6.5" width="5" height="5" rx="1"/><rect x="12.5" y="6.5" width="5" height="5" rx="1"/><rect x="6.5" y="12.5" width="5" height="5" rx="1"/><rect x="12.5" y="12.5" width="5" height="5" rx="1"/></svg>
+        </div>
+        <h3>2048</h3>
+        <p>Slide and merge the tiles. Can you reach the legendary 2048 tile?</p>
+        <div class="game-meta">
+          <span class="game-diff">Medium</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="memory.html" class="game-card" data-card>
+        <div class="game-ico g-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="16" rx="3"/><rect x="7" y="2" width="14" height="16" rx="3"/><path d="m7 10 2 2 3-4"/></svg>
+        </div>
+        <h3>Memory Match</h3>
+        <p>Flip the cards and find every pair. A test of focus and recall.</p>
+        <div class="game-meta">
+          <span class="game-diff">Easy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="flappy.html" class="game-card" data-card>
+        <div class="game-ico g-5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c4-3 7-3 10-2 3 1 6 0 8-3 0 3-1 5-3 7 2 1 3 3 3 6-3-1-5-2-8-2-3 0-7 1-10 3 0-3 1-5 3-6-1-1-2-2-3-3z"/></svg>
+        </div>
+        <h3>Flappy Bird</h3>
+        <p>Tap to flap, dodge the pipes, and see how far you can fly.</p>
+        <div class="game-meta">
+          <span class="game-diff">Hard</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="breakout.html" class="game-card" data-card>
+        <div class="game-ico g-6">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="6" rx="1"/><rect x="13" y="3" width="8" height="6" rx="1"/><rect x="3" y="11" width="8" height="6" rx="1"/><rect x="13" y="11" width="8" height="6" rx="1"/><rect x="8" y="19" width="8" height="3" rx="1"/><circle cx="17.5" cy="17" r="1.8"/></svg>
+        </div>
+        <h3>Breakout</h3>
+        <p>Smash every brick with the bouncing ball. The paddle is in your hands.</p>
+        <div class="game-meta">
+          <span class="game-diff">Medium</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="pong.html" class="game-card" data-card>
+        <div class="game-ico g-7">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="3" height="12" rx="1.5"/><rect x="18" y="6" width="3" height="12" rx="1.5"/><circle cx="12" cy="12" r="2.5"/><line x1="12" y1="2" x2="12" y2="22" stroke-dasharray="3 4"/></svg>
+        </div>
+        <h3>Pong</h3>
+        <p>The original arcade duel. You against the machine — first to 7 wins.</p>
+        <div class="game-meta">
+          <span class="game-diff">Easy</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="minesweeper.html" class="game-card" data-card>
+        <div class="game-ico g-8">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Minesweeper</h3>
+        <p>Clear the grid without detonating a single mine. Careful where you click.</p>
+        <div class="game-meta">
+          <span class="game-diff">Hard</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="wolf3d.html" class="game-card" data-card>
+        <div class="game-ico g-10">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V10l4-3V4l2 1 2-3 2 3 2-1v3l4 3v11z"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+        </div>
+        <h3>Wolfenstein 3D</h3>
+        <p>The 1992 FPS that started it all. Escape Castle Wolfenstein and gun down the guards.</p>
+        <div class="game-meta">
+          <span class="game-diff">Classic</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="doom2.html" class="game-card" data-card>
+        <div class="game-ico g-11">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="6"/><path d="M8 14c.7 2 2 3 4 3s3.3-1 4-3"/><circle cx="9.5" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9" r="1.1" fill="currentColor" stroke="none"/><path d="m10.5 17 .5 2.5M13.5 17l-.5 2.5"/></svg>
+        </div>
+        <h3>Doom II</h3>
+        <p>The 1994 sequel — 32 levels of hell on Earth. The super shotgun awaits.</p>
+        <div class="game-meta">
+          <span class="game-diff">Legendary</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="heretic.html" class="game-card" data-card>
+        <div class="game-ico g-12">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4"/><path d="M11 2v5l-4.5 8a3 3 0 0 0 2.6 4.5h5.8a3 3 0 0 0 2.6-4.5L13 7V2"/><path d="M7.5 14h9"/></svg>
+        </div>
+        <h3>Heretic</h3>
+        <p>Raven's 1994 fantasy Doom — magic weapons, items and a stake for every heart.</p>
+        <div class="game-meta">
+          <span class="game-diff">Retro</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="quake.html" class="game-card" data-card>
+        <div class="game-ico g-13">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/></svg>
+        </div>
+        <h3>Quake</h3>
+        <p>The 1996 fully-3D revolution. Shareware episode — watch out for ogres.</p>
+        <div class="game-meta">
+          <span class="game-diff">Legendary</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+
+      <a href="keen.html" class="game-card" data-card>
+        <div class="game-ico g-14">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><ellipse cx="12" cy="12" rx="10" ry="3.4" transform="rotate(-20 12 12)"/></svg>
+        </div>
+        <h3>Commander Keen</h3>
+        <p>The 1990 Mars platformer from the team that later made Doom. Jump in!</p>
+        <div class="game-meta">
+          <span class="game-diff">Retro</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer class="arcade-foot">
+    <div class="container">
+      <p>BBCC Arcade &copy; 2026 — part of <b>BBCC ICT Fest</b> | <a href="../index.html" style="color:var(--text-2);">Back to the Gallery</a></p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var cards = document.querySelectorAll('[data-card]');
+      cards.forEach(function (card) {
+        card.addEventListener('pointermove', function (e) {
+          var r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+          card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
