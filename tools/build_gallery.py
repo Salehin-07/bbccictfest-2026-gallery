@@ -359,7 +359,8 @@ HEADER = """/* Fest gallery data — GENERATED FILE. Do not edit by hand.
          { src, thumb, alt, category, caption }, numbered 01..N
          inside their final segment.
     4. `featured` is the large BBCC family banner above the segments
-       (full-size original on click).
+       (web-size copy for both display and click-through; originals
+       are local-only and never deployed to GitHub Pages).
 
    PERFORMANCE NOTES:
    - The grid loads thumbnails only and appends 24 cards at a time
@@ -399,10 +400,10 @@ def write_data(all_masters):
     out = [
         HEADER + "window.GALLERY_DATA = {",
         "  featured: {",
-        # The family banner is special: the banner shows the 1600px
-        # web copy (indistinguishable on screen), while a click opens
-        # the full-size camera original.
-        f'    src: "images/gallery/{f["file"]}",',
+        # The family banner uses the 1600px web copy for both display
+        # and click-through: camera originals are local-only and never
+        # pushed (GitHub Pages cannot serve them; see .gitignore).
+        f'    src: "images/gallery/web/{f["file"]}",',
         f'    thumb: "images/gallery/web/{f["file"]}",',
         f'    tag: "{f["tag"]}",',
         f'    alt: "{f["alt"]}",',

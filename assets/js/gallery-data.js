@@ -14,7 +14,8 @@
          { src, thumb, alt, category, caption }, numbered 01..N
          inside their final segment.
     4. `featured` is the large BBCC family banner above the segments
-       (full-size original on click).
+       (web-size copy for both display and click-through; originals
+       are local-only and never deployed to GitHub Pages).
 
    PERFORMANCE NOTES:
    - The grid loads thumbnails only and appends 24 cards at a time
@@ -28,7 +29,7 @@
 
 window.GALLERY_DATA = {
   featured: {
-    src: "images/gallery/_DSC6622.jpg",
+    src: "images/gallery/web/_DSC6622.jpg",
     thumb: "images/gallery/web/_DSC6622.jpg",
     tag: "The BBCC Family",
     alt: "The BBCC family — organizers, guests and volunteers of the 1st ICT Fest",

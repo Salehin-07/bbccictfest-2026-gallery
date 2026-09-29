@@ -2,3 +2,13 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Camera originals are local-only (~5.5GB): they are the source for
+# tools/build_gallery.py but are NEVER deployed. GitHub Pages serves
+# only images/gallery/web/ + images/gallery/thumbs/ (~75MB).
+# NOTE: web/ and thumbs/ live in subdirectories so they are NOT matched.
+images/gallery/*.jpg
+images/gallery/*.jpeg
+images/gallery/*.png
+images/gallery/*.webp
+images/gallery/*.gif
