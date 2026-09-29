@@ -1,12 +1,3 @@
-# Camera originals (5GB+) — never commit; only web/ + thumbs/ ship to browsers.
-images/gallery/*.jpg
-images/gallery/*.jpeg
-images/gallery/*.png
-images/gallery/*.webp
-!images/gallery/web/
-!images/gallery/thumbs/
-
-# Python / OS junk
 __pycache__/
 *.pyc
 .DS_Store
